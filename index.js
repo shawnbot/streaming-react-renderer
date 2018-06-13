@@ -57,6 +57,8 @@ module.exports = (elementComponentMap, options = {}) => {
       : ` ${name}="${escape(value)}"`
   }
 
+  // TODO: implement all of these?
+  // https://github.com/fb55/htmlparser2/wiki/Parser-options#events
   const parser = new Parser({
     onprocessinginstruction(name, data) {
       if (!component) {
