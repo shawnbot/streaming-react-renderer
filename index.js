@@ -4,15 +4,6 @@ const escape = require('html-escape')
 const through = require('through2')
 const {Parser} = require('htmlparser2')
 
-const voidTags = new Set([
-  'link',
-  'meta',
-  'img',
-  'br',
-  'hr',
-])
-
-
 /**
  * The Component class is a container for an element that will
  * eventually be rendered via React, and is primarily used to
@@ -32,31 +23,38 @@ class Component {
     this.children.push(node)
   }
 
-  render(addProps) {
-    const children = this.children.map((child, i) => {
+  render(extraProps = {}) {
+    const props = Object.assign(this.props, extraProps)
+    props.children = this.children.map((child, i) => {
       return (child instanceof Component)
         ? child.render({key: i})
         : child
     })
-    if (addProps) Object.assign(this.props, addProps)
-    return React.createElement(this.type, this.props, children)
+    return React.createElement(this.type, props)
   }
 }
 
-function stringifyAttr(name, value) {
-  return (value === '')
-    ? ` ${name}`
-    : ` ${name}="${escape(value)}"`
+const defaultParseOptions = {
+  xmlMode: false,
+  lowerCaseTags: false,
+  lowerCaseAttributeNames: false,
 }
 
-module.exports = elementComponentMap => {
+module.exports = (elementComponentMap, options = {}) => {
   const tree = []
   let component
 
-  const options = {
-    xmlMode: false,
-    lowerCaseTags: false,
-    lowerCaseAttributeNames: false,
+  const {
+    parse: parseOptions = defaultParseOptions,
+    voidTags = new Set(['br', 'hr', 'img', 'input', 'link', 'meta']),
+    selfClosingTags = new Set(['path']),
+    booleanAttrs = new Set(['hidden'])
+  } = options
+
+  function stringifyAttr(name, value) {
+    return booleanAttrs.has(name)
+      ? ` ${name}`
+      : ` ${name}="${escape(value)}"`
   }
 
   const parser = new Parser({
@@ -102,7 +100,7 @@ module.exports = elementComponentMap => {
     },
     onopentag(name, attrs) {
       if (!component) {
-        transform.push('>')
+        transform.push(selfClosingTags.has(name) ? '/>' : '>')
       }
     },
     ontext(text) {
@@ -125,12 +123,12 @@ module.exports = elementComponentMap => {
           // forget it
           component = null
         }
-      } else if (!voidTags.has(name)) {
+      } else if (!voidTags.has(name) && !selfClosingTags.has(name)) {
         // otherwise, just write the close tag
         transform.push(`</${name}>`)
       }
     }
-  }, options)
+  }, parseOptions)
 
   const transform = through(function thru(chunk, encoding, done) {
     parser.write(chunk)
