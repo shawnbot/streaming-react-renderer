@@ -12,10 +12,11 @@ process.stdin
   .pipe(process.stdout)
 ```
 
-The `componentMap` is an object literal that maps HTML element names to React component classes (or functions, or whatever). For instance:
+The `componentMap` is an object literal that maps HTML element names to React component classes (or functions, or whatever). For instance (assuming that this was pre-compiled to vanilla ES6 with Babel):
 
-```js
-module.exports = {
+```jsx
+import React from 'react'
+export default {
   'primer-box': ({children}) => <div className='Box'>{children}</div>
 }
 ```
