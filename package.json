@@ -1,13 +1,13 @@
 {
-  "name": "streaming-reaction",
-  "version": "1.0.0",
+  "name": "streaming-react-renderer",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "Shawn Allen <shawn.allen@github.com>",
   "license": "ISC",
   "dependencies": {
     "html-escape": "^2.0.0",
