@@ -1,5 +1,14 @@
 # Streaming React renderer
-This is **proof of concept** that demonstrates one way to stream HTML and render specific elements as React components. Here's what it looks like:
+This is **proof of concept** that demonstrates one way to stream HTML and render specific elements as React components. Why would you want to do that? Here are a couple of reasons:
+
+1. Your application servers don't/can't/won't run Node.
+1. You run Rails, but you've discovered that the [official react-rails project](https://github.com/reactjs/react-rails) is just not usable in its current form because it completely breaks React's composition model.
+1. You don't use React, but are interested in seeing how a component-driven architecture could focus your teams' efforts on building features rather than copy-pasting gigantic blobs of HTML or maintaining unwieldy templates.
+
+This approach suggests a form of server-side includes with a React-flavored twist.
+
+## Example
+Here's what it looks like in practice:
 
 ```js
 const createTransformStream = require('streaming-react-renderer')
